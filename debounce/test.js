@@ -1,7 +1,13 @@
 var assert = require('assert');
-var debounce = require('./');
+var debounce = require('./debounce');
 
 describe('debounce', function() {
+  it('should be a function', function(done) {
+    const type = typeof debounce;
+    assert(type, 'function');
+    done();
+  });
+
   it('waits for the threshold to pass before executing', function(done) {
     var now = new Date();
     var debounced = debounce(function() {

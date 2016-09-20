@@ -7,14 +7,16 @@ var update = function(item, actionObj) {
 
   switch(action) {
     case '$set':
-      var newObj = clone(item);
+      var newObj = Object.assign({}, item);
       var newVal = actionObj;
       var stk = [];
       while(typeof newVal === 'object') {
         stk.push(Object.keys(newVal)[0]);
         newVal = newVal[stk[stk.length - 1]];
       }
-      newObj[stk.shift()][stk.shift()] = newVal;
+      var a = stk.shift();
+      newObj[a] = Object.assign({}, item[a]);
+      newObj[a][stk.shift()] = newVal;
       result = newObj;
       break;
     case '$merge':

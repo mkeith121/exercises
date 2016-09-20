@@ -29,10 +29,7 @@ var update = function(item, actionObj) {
         temp = Object.assign({}, item[a]);
         newObj[a] = temp;
       }
-      var b = stk.pop();
-      // if(item.hasOwnProperty(b)) {
-        temp[b] = newVal;
-      // }
+      temp[stk.pop()] = newVal;
       result = newObj;
       break;
     case '$merge':

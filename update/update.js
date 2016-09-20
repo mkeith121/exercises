@@ -5,8 +5,12 @@ var update = function(item, actionObj) {
   var st = JSON.stringify(actionObj);
   var re = /((^\$apply)|(\$set)|(\$merge)|(\$push)|(\$unshift)|(\$splice))/;
   var matchObj = st.match(re);
-  var action = matchObj[0];
-  var result;
+  if(!matchObj) {
+    action = Object.keys(actionObj)[0] === '$apply' ? '$apply' : null;
+  } else {
+    action = matchObj[0];
+  }
+  var result = item;
 
   switch(action) {
     case '$set':

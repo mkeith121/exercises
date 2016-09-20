@@ -1,51 +1,31 @@
+var helpers = require('./updateHelpers.js');
+
 var update = function(item, actionObj) {
+  var action;
   var st = JSON.stringify(actionObj);
-  var re = /((\$set)|(\$merge)|(\$push)|(\$unshift)|(\$splice)|(\$apply))/;
+  var re = /((^\$apply)|(\$set)|(\$merge)|(\$push)|(\$unshift)|(\$splice))/;
   var matchObj = st.match(re);
   var action = matchObj[0];
   var result;
 
   switch(action) {
     case '$set':
-      var newObj = Object.assign({}, item);
-      var newVal = actionObj;
-      var stk = [];
-      while(typeof newVal === 'object') {
-        if(!stk.length) {
-          if(Object.keys(newVal)[0] === '$set') {
-            result = Object.assign({}, actionObj['$set']);
-            return result;
-          }
-        }
-        stk.push(Object.keys(newVal)[0]);
-        newVal = newVal[stk[stk.length - 1]];
-      }
-      stk.pop();
-      stk.reverse();
-      var temp = newObj;
-      while (stk.length > 1) {
-        var a = stk.pop();
-        temp = newObj[a];
-        temp = Object.assign({}, item[a]);
-        newObj[a] = temp;
-      }
-      temp[stk.pop()] = newVal;
-      result = newObj;
+      result = helpers.set(item, actionObj);
       break;
     case '$merge':
-      var newObj = Object.assign({}, item);
+      result = helpers.merge(item, actionObj);
       break;
     case '$push':
-      var newArr = item.slice();
+      result = helpers.push(item, actionObj);
       break;
     case '$unshift':
-      var newArr = item.slice();
+      result = helpers.unshift(item, actionObj);
       break;
     case '$splice':
-      var newArr = item.slice();
+      result = helpers.splice(item, actionObj);
       break;
     case '$apply':
-      break;
+      result = helpers.apply(item, actionObj);
   }
   return result;
 }

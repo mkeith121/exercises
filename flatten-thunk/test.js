@@ -1,5 +1,5 @@
 var assert = require('assert');
-var flattenThunk = require('./');
+var flattenThunk = require('./flatten_thunk.js');
 
 describe('flattenThunk', function() {
 
@@ -18,7 +18,7 @@ describe('flattenThunk', function() {
     var thunk3 = function(cb) {
       setTimeout(function() {
         cb(null, thunk2);
-      }, 1);
+      }, 10);
     }
 
     flattenThunk(thunk3)(function(err, result) {

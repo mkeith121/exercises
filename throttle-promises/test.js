@@ -1,5 +1,5 @@
 var assert = require('assert');
-var throttlePromises = require('./');
+var throttlePromises = require('./throttlePromises.js');
 
 describe('throttle-promises', function() {
   it("doesn't run more than `limit` promises in parallel", function(done) {
@@ -29,7 +29,9 @@ describe('throttle-promises', function() {
       arr.push(asyncFactory);
     }
 
-    throttlePromises(5, arr).then(function(results) {
+    throttlePromises(5, arr)
+    .then(function(results) {
+      console.log(results);
       var expectedResults = Array(101).join('.').split('').map(function(dot, index) {
         return index + '!';
       });

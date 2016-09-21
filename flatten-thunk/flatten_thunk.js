@@ -1,12 +1,17 @@
 function flattenThunk(thunk) {
-  (function(cb) {
-    thunk(function(x,value) {
-      cb(value);
-    })
-  })(function(x) {
-    console.log(x);
-  })
+  return function (cb) {
+    function inside (func) {
+      var value;
+      func(function(x,item) {
+        if(typeof item === 'function') {
+          inside(item)
+        } else {
+          cb(null, item);
+        }
+      });
+    }
+    inside(thunk);
+  }
 }
-
 
 module.exports = flattenThunk;

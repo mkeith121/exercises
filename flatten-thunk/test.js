@@ -18,7 +18,7 @@ describe('flattenThunk', function() {
     var thunk3 = function(cb) {
       setTimeout(function() {
         cb(null, thunk2);
-      }, 10);
+      }, 1);
     }
 
     flattenThunk(thunk3)(function(err, result) {

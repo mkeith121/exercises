@@ -1,57 +1,33 @@
-// function throttlePromises (limit, funcArr) {
-//   var outputArr = [];
-//   var done = funcArr.length;
-//   return new Promise (function(resolve) {
-//     funcArr.forEach(function(func, index) {
-//       func().then(function(val) {
-//         outputArr[index] = val;
-//         done--;
-//         if(!done) {
-//           resolve(outputArr);
-//         }
-//       })
-//     })
-//   })
-// }
-
 function throttlePromises (limit, funcArr) {
-  var promiseBatches = batchGenerator(limit, funcArr)
-  // .map(function(batch){
-  //   console.log('batch: '+batch);
-  //   return promisePacketMaker(batch);
-  // });
-  var myArr = [];
-  var done = promiseBatches.length;
+  var promiseBatches = batchGenerator(limit, funcArr).reverse();
+  var batches = [];
 
   return new Promise (function(resolve) {
-    promiseBatches.forEach(function(pb, index) {
-      pb().then(function(results){
-        myArr[index] = results;
-        done--;
-        if(!done) {
-          resolve(myArr.reduce(function(final, arr) {
-            arr.forEach(function(val) {
-              final.push(val);
-            })
-            return final;
-          }, []))
+    function doIt(batch) {
+      promisePacketMaker(batch).then(function(result) {
+        batches = batches.concat(result);
+        if(promiseBatches.length) {
+          doIt(promiseBatches.pop())
+        } else {
+          resolve(batches);
         }
       })
-    })
-
+    }
+    doIt(promiseBatches.pop());
   })
 }
 
 function promisePacketMaker (arr) {
-  var result = [];
-  var done = arr.length;
-  return new Promise(function(resolve) {
-    arr.forEach(function(func,index) {
+  var blue = arr;
+  var myArr = [];
+  var done = blue.length;
+  return new Promise (function(resolve) {
+    blue.forEach(function(func, index) {
       func().then(function(val) {
-        result[index] = val;
-        done--;
+        myArr[index] = val;
+        done--
         if(!done) {
-          resolve(result);
+          resolve(myArr);
         }
       })
     })
@@ -61,14 +37,16 @@ function promisePacketMaker (arr) {
 function batchGenerator (limit, funcArr) {
   var currBatch = [];
   var batches = [];
-  funcArr.forEach(function(func){
+  funcArr.forEach(function(func, index){
+    currBatch.push(func);
     if(currBatch.length === limit) {
       batches.push(currBatch);
       currBatch = [];
-    } else {
-      currBatch.push(currBatch);
     }
   })
+  if(currBatch.length) {
+    batches.push(currBatch);
+  }
   return batches;
 }
 
